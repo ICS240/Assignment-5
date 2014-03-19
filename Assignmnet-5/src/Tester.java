@@ -1,10 +1,13 @@
-package Test;
+
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Tester {
-
+	/**
+	 * Test class
+	 */
+	public static WordCollection collection = new WordCollection();
 	/**
 	 * @param args
 	 */
@@ -43,16 +46,19 @@ public class Tester {
 		    lines.add(line);
 		}
 		
+		System.out.println("Printing out Lines........................................");
 		for(int i = 0; i< lines.size(); i++){
 			String[] items = lines.get(i).split(",");
 			if(items.length > 2) { 
-				System.out.println("Key word = " + items[0] + " theme = " + items[1] + " url = " + items[2]);
-				//this.addWord(new Word(items[0], items[1], items[2])); // could have an error occur here 
+				//System.out.println("Key word = " + items[0] + " theme = " + items[1] + " url = " + items[2]);
+				collection.addWord(new Word(items[0], items[1], items[2])); // could have an error occur here 
 			} else { 
-				System.out.println("Key word = " + items[0] + " theme = " + items[1] + " url = null");
-				//this.addWord(new Word(items[0], items[1], "")); 
+				//System.out.println("Key word = " + items[0] + " theme = " + items[1] + " url = null");
+				collection.addWord(new Word(items[0], items[1], "")); 
 			}
 		}
+		
+		System.out.println(collection);
 		
 	}
 

@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.swing.*;
 
@@ -265,9 +267,7 @@ public class WorkSheetCreatorGUI extends JFrame {
 	 */
 	private void fillThemeBox()
 	{
-		for(Word word : this.collection.ToList()){
-			this.themes.addItem(word.getWord());
-		}
+		
 	}
 	
 	

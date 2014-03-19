@@ -20,13 +20,22 @@ public class WordCollection {
 		this.wordList = new java.util.ArrayList<Word>();
 	}
 	/**
+	 * Getter word method
+	 * @return
+	 * 	the wordlist object
+	 */
+	public java.util.ArrayList<Word> getWordList()
+	{
+		return this.wordList;
+	}
+	/**
 	 * Adds a word object to the ArrayList
 	 * @param a_word
 	 * 	String to be added to the WordList
 	 * @return
 	 * 	<b>true</b> if the word successfully added, <b>false</b> if the word already exists
 	 */
-	public boolean addWord(String a_word)
+	public void addWord(String a_word)
 	{
 		boolean exists = false;
 		
@@ -40,9 +49,6 @@ public class WordCollection {
 		
 		if(!exists){
 			wordList.add(new Word(a_word));
-			return true;
-		} else {
-			return false;
 		}
 	}
 	/**
@@ -52,25 +58,21 @@ public class WordCollection {
 	 * @return
 	 * 	<b>true</b> if the word successfully added, <b>false</b> if the word already exists
 	 */
-	public boolean addWord(Word a_word)
+	public void addWord(Word a_word)
 	{	
 		boolean exists = false;
 		
-		for(Word word : this.wordList)
-		{
-			if(word.equals(a_word)){
-				word.addLists(a_word.getThemeList(), a_word.getThemeList());
+		for(Word word : this.wordList){
+			if(word.getWord().equals(a_word.getWord())){
+				word.addLists(a_word.getThemeList(), a_word.getUrlList());
 				exists = true;
 				break;
 			}
 		}
 		
 		if(!exists){
-			this.wordList.add(a_word);
-			exists = true;
+			wordList.add(a_word);
 		} 
-		
-		return exists;
 	}
 	/**
 	 * Removes a word from the collection
@@ -145,26 +147,47 @@ public class WordCollection {
 	 * 	When there is no url
 	 */
 	@SuppressWarnings("resource")
-	public void ReadFile(java.io.File f) throws FileNotFoundException, IOException, NullPointerException, ArrayIndexOutOfBoundsException
+	public void readFile(java.io.File f) 
 	{
-		java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(f));
-		
-		java.util.ArrayList<String> lines = new java.util.ArrayList<String>();
-		
-		String line = null;
-		
-		while ((line = reader.readLine()) != null) {
-		    lines.add(line);
+		try
+		{
+			java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(f));
+			
+			java.util.ArrayList<String> lines = new java.util.ArrayList<String>();
+			
+			String line = null;
+			
+			while ((line = reader.readLine()) != null) {
+			    lines.add(line);
+			}
+			
+			for(int i = 0; i< lines.size(); i++){
+				String[] items = lines.get(i).split(",");
+				if(items.length > 2) { 
+					this.addWord(new Word(items[0], items[1], items[2])); // could have an error occur here 
+				} else { 
+					this.addWord(new Word(items[0], items[1], "")); 
+				}
+			}
+		} catch(IOException | NullPointerException | ArrayIndexOutOfBoundsException ex){
+			ex.printStackTrace();
 		}
 		
-		for(int i = 0; i< lines.size(); i++){
-			String[] items = lines.get(i).split(",");
-			if(items.length > 2) { 
-				this.addWord(new Word(items[0], items[1], items[2])); // could have an error occur here 
-			} else { 
-				this.addWord(new Word(items[0], items[1], "")); 
+	}
+	
+	public String toString()
+	{
+		StringBuilder string = new StringBuilder();
+		for(int i = 0; i < this.getSize(); i++){
+			string.append("Word = " + this.wordList.get(i).getWord());
+			string.append("\n");
+			for(int j = 0; j < this.getWordList().get(i).getThemeList().size() && j < this.getWordList().get(i).getThemeList().size(); j++){
+				string.append("\t theme = " + this.wordList.get(i).getThemeList().get(j));
+				string.append("\t url = " + this.wordList.get(i).getUrlList().get(j));
+				string.append("\n");
 			}
 		}
 		
+		return string.toString();
 	}
 }
