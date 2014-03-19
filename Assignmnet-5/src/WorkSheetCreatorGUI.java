@@ -7,32 +7,40 @@ import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class WorkSheetCreatorGUI extends JFrame {
+	// label for the combobox theme
+	private JLabel lblThemes;
 	// saves all the words
 	private JComboBox<String> themes;
-	// holds the options for the user to manipulate
-	private JPanel options;
-	// panel for the chooser
-	private JPanel chooser;
+	// holds the pnlOptions for the user to manipulate
+	private JPanel pnlOptions;
+	// panel for the pnlChooser
+	private JPanel pnlChooser;
 	// menu for help and validation summary
-	private JPanel menu;
+	private JPanel pnlMenu;
 	// maximum length of the word
-	private JLabel minVal;
+	private JLabel lblMinVal;
 	// minimum length of the word
-	private JLabel maxVal;
+	private JTextField txtMinVal;
+	// minimum value for the user to select
+	private JTextField txtMaxVal;
+	// maximm value for the user to select
+	private JLabel lblMaxVal;
 	// displays validation errors
-	private JLabel validationSummary;
+	private JLabel lblValidationSummary;
 	// holds the word count
-	private JLabel wordCount;
+	private JLabel lblWordCount;
 	// holds the file
 	private java.io.File file;
-	// holds the filename/directory
-	private JTextField fileName;
-	// button which open(s)
+	// holds the txtFileName/directory
+	private JTextField txtFileName;
+	// FileChooser to select a file
 	private JFileChooser open;
+	// button which open(s)
+	private JButton btnOpenFile;
 	// closes the application
-	private JButton close;
-	// help button
-	private JButton help;
+	private JButton btnClose;
+	// btnHelp button
+	private JButton btnHelp;
 	
 	// collection of words
 	private WordCollection collection;
@@ -52,43 +60,74 @@ public class WorkSheetCreatorGUI extends JFrame {
 		//
 		// JFrame
 		//
-		this.setLayout(new java.awt.GridLayout(1,3));
-		this.setBounds(100, 100, 300, 550);
+		this.setLayout(null);
+		this.setBounds(100, 100, 500, 550);
 		//
-		// chooser
+		// pnlMenu
 		//
-		this.chooser = new JPanel(new java.awt.FlowLayout());
+		this.pnlMenu = new JPanel(new java.awt.FlowLayout());
+		this.pnlMenu.setBounds(10, 0, 370, 50);
 		//
-		// menu
+		// pnlChooser
 		//
-		this.menu = new JPanel(new java.awt.FlowLayout());
+		this.pnlChooser = new JPanel(null);
+		this.pnlChooser.setBounds(10, 50, 370, 100);
+		this.pnlChooser.setBackground(Color.DARK_GRAY);
 		//
-		// options
+		// pnlOptions
 		//
-		this.options = new JPanel(new java.awt.FlowLayout());
+		this.pnlOptions = new JPanel(null);
+		this.pnlOptions.setBounds(10, 150, 370, 120);
+		//this.pnlOptions.setBackground(Color.RED); // comment out after testing
 		//
-		// wordCount
+		// lblMinVal
 		//
-		this.wordCount = new JLabel("0");
-		this.wordCount.setEnabled(false); // read-only
-		this.setSize(50, 30);
+		this.lblMinVal = new JLabel("Minimum Value");
+		this.lblMinVal.setBounds(10, 10, 100, 30);
+		//
+		// txtMinVal
+		//
+		this.txtMinVal = new JTextField("");
+		this.txtMinVal.setBounds(110, 10, 30, 30);
+		//
+		// lblMaxVal
+		//
+		this.lblMaxVal = new JLabel("Maximum Value");
+		this.lblMaxVal.setBounds(10, 40, 100, 30);
+		//
+		//  txtMaxVal
+		//
+		this.txtMaxVal = new JTextField("");
+		this.txtMaxVal.setBounds(110, 40, 30, 30);
+		//
+		// lblWordCount
+		//
+		this.lblWordCount = new JLabel("Word Count: N/A");
+		this.lblWordCount.setBounds(150, 10, 110, 30);
+		//
+		// lblThemes
+		//
+		this.lblThemes = new JLabel("Select a theme");
+		this.lblThemes.setBounds(150, 40, 110, 30);
 		//
 		// themes
 		//
 		this.themes = new JComboBox<String>();
 		this.themes.setEnabled(false);
+		this.themes.setBounds(150, 80, 110, 30);
 		this.themes.addItem("All Words");
 		//
-		// validationSummary
+		// lblValidationSummary
 		//
-		this.validationSummary = new JLabel("Test display");
-		this.validationSummary.setForeground(Color.RED);
+		this.lblValidationSummary = new JLabel("Test display");
+		this.lblValidationSummary.setForeground(Color.RED);
 		//
-		// fileNAme
+		// txtFileName
 		//
-		this.fileName = new JTextField("Select a file");
-		this.fileName.setEnabled(false); // disables, and makes read-only
-		this.fileName.addActionListener(new ActionListener(){
+		this.txtFileName = new JTextField("Select a file");
+		this.txtFileName.setEnabled(false); // disables, and makes read-only
+		this.txtFileName.setBounds(30, 10, 300, 30);
+		this.txtFileName.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				showChooserDialog();
@@ -98,27 +137,32 @@ public class WorkSheetCreatorGUI extends JFrame {
 		// open
 		//
 		this.open = new JFileChooser();
-		this.open.addActionListener(new ActionListener(){
+		//
+		// btnOpenFile
+		//
+		this.btnOpenFile = new JButton("Open CSV");
+		this.btnOpenFile.setBounds(30, 45, 100, 30);
+		this.btnOpenFile.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				showChooserDialog();
 			}
 		});
 		//
-		// help
+		// btnHelp
 		//
-		this.help = new JButton("Help");
-		this.help.addActionListener(new ActionListener(){
+		this.btnHelp = new JButton("Help");
+		this.btnHelp.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				showHelpDialaog();
 			}
 		});
 		//
-		// close
+		// btnClose
 		//
-		this.close = new JButton("Close");
-		this.close.addActionListener(new ActionListener(){
+		this.btnClose = new JButton("Close");
+		this.btnClose.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
@@ -127,25 +171,28 @@ public class WorkSheetCreatorGUI extends JFrame {
 		//
 		// add components to the panels
 		//
-		this.menu.add(this.help);
-		this.menu.add(this.close);
-		this.menu.add(this.validationSummary);
+		this.pnlMenu.add(this.btnHelp);
+		this.pnlMenu.add(this.btnClose);
+		this.pnlMenu.add(this.lblValidationSummary);
 		
-		this.chooser.add(this.fileName);
-		this.chooser.add(this.open);
+		this.pnlChooser.add(this.txtFileName);
+		this.pnlChooser.add(this.btnOpenFile);
 		
-		this.options.add(this.wordCount);
-		this.options.add(this.themes);
-		this.options.add(this.minVal);
-		this.options.add(this.maxVal);
+		this.pnlOptions.add(this.lblWordCount);
+		this.pnlOptions.add(this.lblThemes);
+		this.pnlOptions.add(this.themes);
+		this.pnlOptions.add(this.lblMinVal);
+		this.pnlOptions.add(this.txtMinVal);
+		this.pnlOptions.add(this.lblMaxVal);
+		this.pnlOptions.add(this.txtMaxVal);
 		
-		this.add(this.menu);
-		this.add(this.chooser);
-		this.add(this.options);
+		this.add(this.pnlMenu);
+		this.add(this.pnlChooser);
+		this.add(this.pnlOptions);
 		
 	}
 	/**
-	 * Displays a JFileChooser Dialog
+	 * Displays a JFileChooser Dialog and setup the display controls
 	 */
 	private void showChooserDialog()
 	{
@@ -155,15 +202,18 @@ public class WorkSheetCreatorGUI extends JFrame {
 			this.file = this.open.getSelectedFile();
 			
 			if(this.validExtension(file).equals("csv")){
-				this.fileName.setText(this.file.getPath());
+				this.setlblValidationSummaryText("File Selected");
+				this.txtFileName.setText(this.file.getPath());
+				this.setup();
 			} else if(returnVal == JFileChooser.CANCEL_OPTION){
-				this.fileName.setText("Select a file");
+				this.setlblValidationSummaryText("User action canceled");
+				this.txtFileName.setText("Select a file");
 			} else {
-				this.setValidationSummaryText("Invalid File chosen");
-				this.fileName.setText("Select a file");
+				this.setlblValidationSummaryText("Invalid File chosen");
+				this.txtFileName.setText("Select a file");
 			}
 		} else {
-			this.fileName.setText("Select a file");
+			this.txtFileName.setText("Select a file");
 		}
 	}
 	/**
@@ -192,30 +242,32 @@ public class WorkSheetCreatorGUI extends JFrame {
 	 * @param text
 	 * 	Text to be displayed as a error to the user
 	 */
-	private void setValidationSummaryText(String text)
+	private void setlblValidationSummaryText(String text)
 	{
-		this.validationSummary.setText(text);
+		this.lblValidationSummary.setText(text);
 	}
 	/**
 	 * Displays the help dialog
 	 */
 	public void showHelpDialaog()
 	{
-		JOptionPane.showMessageDialog(open, this, null, JOptionPane.OK_OPTION);
+		JOptionPane.showMessageDialog(this, "1. Click the button label \"Open\"\n 2. Select a \".csv\" file \n 3. ");
 	}
 	/**
 	 * Enables and fills all the controls
 	 */
 	private void setup()
 	{
-		
+		this.fillThemeBox();
 	}
 	/**
-	 * Fills the JComboBox with all the themes
+	 * Fills the JComboBox with all the <i>Key</i> Words
 	 */
 	private void fillThemeBox()
 	{
-		
+		for(Word word : this.collection.ToList()){
+			this.themes.addItem(word.getWord());
+		}
 	}
 	
 	

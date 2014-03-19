@@ -53,6 +53,16 @@ public class Word{
 		this.themeList = a_theme;
 		this.urlList = a_url;
 	}
+	
+	public Word(String a_word, String a_theme, String a_url)
+	{
+		this.word = a_word;
+		this.themeList = new java.util.ArrayList<String>();
+		this.themeList.add(a_theme);
+		
+		this.urlList = new java.util.ArrayList<String>();
+		this.urlList.add(a_url);
+	}
 	/**
 	 * Getter method
 	 * @return
@@ -117,6 +127,59 @@ public class Word{
 	public boolean addTheme(String a_theme)
 	{
 		return this.themeList.add(a_theme);
+	}
+	/**
+	 * Adds a theme to the list
+	 * @param a_theme
+	 * 	Theme list to be added to the already existing list
+	 * @return
+	 * 		<b>true</b> if the theme was successfully added, else <b>false</b>
+	 */
+	public boolean addTheme(java.util.ArrayList<String> a_theme)
+	{
+		for(String string : a_theme){
+			this.themeList.add(string);
+		}
+		
+		return true;
+	}
+	/**
+	 * Adds a URL to the list
+	 * @param a_url
+	 * 	url to be added
+	 * @return
+ * 		<b>true</b> if the URL was successfully added, else <b>false</b>
+	 */
+	public boolean addUrl(String a_url)
+	{
+		return this.urlList.add(a_url);
+	}
+	/**
+	 * Adds a URL to the list
+	 * @param a_url
+	 * 	url to be added
+	 * @return
+ * 		<b>true</b> if the URL was successfully added, else <b>false</b>
+	 */
+	public boolean addUrl(java.util.ArrayList<String> a_url)
+	{
+		for(String string : a_url){
+			this.urlList.add(string);
+		}
+		
+		return true;
+	}
+	/**
+	 * Adds a collection of URLs and themes
+	 * @param a_theme
+	 * 	theme collection to be added
+	 * @param a_url
+	 * 	url collection to be added
+	 */
+	public void addLists(java.util.ArrayList<String> a_theme, java.util.ArrayList<String> a_url)
+	{
+		this.addTheme(a_theme);
+		this.addUrl(a_url);
 	}
 	/**
 	 * Removes a theme from the list

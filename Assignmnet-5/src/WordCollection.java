@@ -53,23 +53,24 @@ public class WordCollection {
 	 * 	<b>true</b> if the word successfully added, <b>false</b> if the word already exists
 	 */
 	public boolean addWord(Word a_word)
-	{
+	{	
 		boolean exists = false;
 		
 		for(Word word : this.wordList)
 		{
 			if(word.equals(a_word)){
+				word.addLists(a_word.getThemeList(), a_word.getThemeList());
 				exists = true;
 				break;
 			}
 		}
 		
 		if(!exists){
-			wordList.add(a_word);
-			return true;
-		} else {
-			return false;
-		}
+			this.wordList.add(a_word);
+			exists = true;
+		} 
+		
+		return exists;
 	}
 	/**
 	 * Removes a word from the collection
@@ -130,16 +131,39 @@ public class WordCollection {
 	{
 		return this.wordList.size();
 	}
-	
-	public void ReadFile(java.io.File f) throws FileNotFoundException, IOException
+	/**
+	 * 
+	 * @param f
+	 * 	File 
+	 * @throws FileNotFoundException
+	 * 	The file could not be opened, or was not found
+	 * @throws IOException
+	 * 	Did not have permissions to open the file, or the file is the wrong format
+	 * @throws NullPointerException
+	 * 	The list was split and ran outside of the bounds
+	 * @throws ArrayIndexOutOfBoundsException
+	 * 	When there is no url
+	 */
+	@SuppressWarnings("resource")
+	public void ReadFile(java.io.File f) throws FileNotFoundException, IOException, NullPointerException, ArrayIndexOutOfBoundsException
 	{
 		java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(f));
 		
 		java.util.ArrayList<String> lines = new java.util.ArrayList<String>();
 		
 		String line = null;
+		
 		while ((line = reader.readLine()) != null) {
 		    lines.add(line);
+		}
+		
+		for(int i = 0; i< lines.size(); i++){
+			String[] items = lines.get(i).split(",");
+			if(items.length > 2) { 
+				this.addWord(new Word(items[0], items[1], items[2])); // could have an error occur here 
+			} else { 
+				this.addWord(new Word(items[0], items[1], "")); 
+			}
 		}
 		
 	}
