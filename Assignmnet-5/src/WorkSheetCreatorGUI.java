@@ -201,6 +201,7 @@ public class WorkSheetCreatorGUI extends JFrame {
 		int returnVal = this.open.showOpenDialog(WorkSheetCreatorGUI.this);
 		
 		if(returnVal == JFileChooser.APPROVE_OPTION){
+			
 			this.file = this.open.getSelectedFile();
 			
 			if(this.validExtension(file).equals("csv")){
@@ -210,12 +211,15 @@ public class WorkSheetCreatorGUI extends JFrame {
 			} else if(returnVal == JFileChooser.CANCEL_OPTION){
 				this.setlblValidationSummaryText("User action canceled");
 				this.txtFileName.setText("Select a file");
+				this.setDefault();
 			} else {
 				this.setlblValidationSummaryText("Invalid File chosen");
 				this.txtFileName.setText("Select a file");
+				this.setDefault();
 			}
 		} else {
 			this.txtFileName.setText("Select a file");
+			this.setDefault();
 		}
 	}
 	/**
@@ -260,6 +264,7 @@ public class WorkSheetCreatorGUI extends JFrame {
 	 */
 	private void setup()
 	{
+		this.collection.readFile(this.file);
 		this.fillThemeBox();
 	}
 	/**
@@ -267,8 +272,26 @@ public class WorkSheetCreatorGUI extends JFrame {
 	 */
 	private void fillThemeBox()
 	{
-		
+		for(Word word: this.collection.getWordList()){
+			this.themes.addItem(word.getWord());
+		}
+		this.themes.setEnabled(true);
 	}
-	
+	/**
+	 * Defaults all fields
+	 */
+	private void setDefault()
+	{
+		this.collection.getWordList();
+		this.themes.setEnabled(false);
+		this.txtFileName.setText("Select a file");
+		this.txtMaxVal.setText("");
+		this.txtMaxVal.setEnabled(false);
+		this.txtMinVal.setText("");
+		this.txtMinVal.setEnabled(false);
+		this.lblWordCount.setText("Word Count: N/A");
+		this.themes.removeAll();
+		this.themes.addItem("All Words");
+	}
 	
 }
