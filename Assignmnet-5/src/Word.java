@@ -192,5 +192,14 @@ public class Word{
 	{
 		return this.themeList.remove(themeName);
 	}
+	/**
+	 * Gets the Count of themes
+	 * @return
+	 * 	the number of themes the word has
+	 */
+	public int getThemeCount()
+	{
+		return this.themeList.size();
+	}
 	
 }

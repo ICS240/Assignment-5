@@ -19,6 +19,10 @@ public class Tester {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		//removeAllThemes();
+		
+		removeLetters();
 	}
 	/**
 	 * 
@@ -54,12 +58,35 @@ public class Tester {
 				collection.addWord(new Word(items[0], items[1], items[2])); // could have an error occur here 
 			} else { 
 				//System.out.println("Key word = " + items[0] + " theme = " + items[1] + " url = null");
-				collection.addWord(new Word(items[0], items[1], "")); 
+				collection.addWord(new Word(items[0], items[1], "IMAGE NOT FOUND")); 
 			}
 		}
 		
 		System.out.println(collection);
 		
+	}
+	/**
+	 * Removes all the themes form the collection wordList
+	 * @return
+	 * 	true if they were all removed. 
+	 */
+	public static boolean removeAllThemes()
+	{
+		System.out.println("Removing all Themes.........................................");
+		boolean ret = collection.removeAllThemes();
+		
+		System.out.println(collection);
+		
+		return ret;
+	}
+	/**
+	 * 
+	 */
+	public static void removeLetters()
+	{
+		collection.removeLetters();
+		
+		System.out.println(collection);
 	}
 
 }

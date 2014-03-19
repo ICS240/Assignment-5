@@ -1,8 +1,8 @@
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
 
 import javax.swing.*;
 
@@ -21,12 +21,14 @@ public class WorkSheetCreatorGUI extends JFrame {
 	private JPanel pnlMenu;
 	// maximum length of the word
 	private JLabel lblMinVal;
+	// Displays the theme count for each word
+	private JLabel lblThemeCount;
 	// minimum length of the word
-	private JTextField txtMinVal;
+	private JTextField txtNumWords;
 	// minimum value for the user to select
-	private JTextField txtMaxVal;
-	// maximm value for the user to select
-	private JLabel lblMaxVal;
+	private JTextField txtWordLength;
+	// maximum value for the user to select
+	private JLabel lblWordLength;
 	// displays validation errors
 	private JLabel lblValidationSummary;
 	// holds the word count
@@ -43,6 +45,12 @@ public class WorkSheetCreatorGUI extends JFrame {
 	private JButton btnClose;
 	// btnHelp button
 	private JButton btnHelp;
+	// label for JCheckBox
+	private JLabel lblRemovedLetters;
+	// removes letters from the words
+	private JCheckBox removeLetters;
+	// create button
+	private JButton btnCreate;
 	
 	// collection of words
 	private WordCollection collection;
@@ -63,12 +71,13 @@ public class WorkSheetCreatorGUI extends JFrame {
 		// JFrame
 		//
 		this.setLayout(null);
-		this.setBounds(100, 100, 500, 550);
+		this.setBounds(100, 100, 410, 580);
 		//
 		// pnlMenu
 		//
 		this.pnlMenu = new JPanel(new java.awt.FlowLayout());
-		this.pnlMenu.setBounds(10, 0, 370, 50);
+		this.pnlMenu.setBounds(10, 450 , 370, 80);
+		this.pnlMenu.setBackground(Color.DARK_GRAY);
 		//
 		// pnlChooser
 		//
@@ -79,33 +88,95 @@ public class WorkSheetCreatorGUI extends JFrame {
 		// pnlOptions
 		//
 		this.pnlOptions = new JPanel(null);
-		this.pnlOptions.setBounds(10, 150, 370, 120);
+		this.pnlOptions.setBounds(10, 150, 370, 300);
 		//this.pnlOptions.setBackground(Color.RED); // comment out after testing
 		//
 		// lblMinVal
 		//
-		this.lblMinVal = new JLabel("Minimum Value");
+		this.lblMinVal = new JLabel("# of words");
 		this.lblMinVal.setBounds(10, 10, 100, 30);
 		//
-		// txtMinVal
+		// txtNumWords (# of words)
 		//
-		this.txtMinVal = new JTextField("");
-		this.txtMinVal.setBounds(110, 10, 30, 30);
+		this.txtNumWords = new JTextField("");
+		this.txtNumWords.setBounds(110, 10, 30, 30);
+		this.txtNumWords.setEnabled(false);
+		this.txtNumWords.addFocusListener(new java.awt.event.FocusListener(){
+
+			@Override
+			public void focusGained(FocusEvent e) { }
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				try{
+					Integer.parseInt(txtNumWords.getText());
+					int val = Integer.parseInt(txtNumWords.getText());
+					if(val > -1 && val < 11){
+						if(val > collection.getThemeCount(themes.getSelectedItem().toString())){
+							setlblValidationSummaryText("There are Less themes than requested...");
+						}
+					} else {
+						setlblValidationSummaryText("Minimum word length must be between 0 and 10");
+						txtNumWords.requestFocus();
+					}
+					
+				} catch(NumberFormatException nfEx){
+					txtNumWords.requestFocus();
+					setlblValidationSummaryText("Minimum word length must be a number");
+				}
+			}
+			
+		});
 		//
-		// lblMaxVal
+		// lblRemovedLetters
 		//
-		this.lblMaxVal = new JLabel("Maximum Value");
-		this.lblMaxVal.setBounds(10, 40, 100, 30);
+		this.lblRemovedLetters = new JLabel("Default Text");
+		this.lblRemovedLetters.setBounds(10, 20, 100, 30);
+		this.lblRemovedLetters.setForeground(Color.RED);
 		//
-		//  txtMaxVal
+		// lblWordLength
 		//
-		this.txtMaxVal = new JTextField("");
-		this.txtMaxVal.setBounds(110, 40, 30, 30);
+		this.lblWordLength = new JLabel("Word Length");
+		this.lblWordLength.setBounds(10, 40, 100, 30);
+		//
+		//  txtWordLength
+		//
+		this.txtWordLength = new JTextField("");
+		this.txtWordLength.setBounds(110, 40, 30, 30);
+		this.txtWordLength.setEnabled(false);
+		this.txtWordLength.addFocusListener(new java.awt.event.FocusListener(){
+
+			@Override
+			public void focusGained(FocusEvent e) { }
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				try{
+					int val = Integer.parseInt(txtWordLength.getText());
+					if(val > -1 && val < 11){
+						setlblValidationSummaryText("Minimum word length set to " + val);
+					} else {
+						setlblValidationSummaryText("Word length must be between 0 and 10");
+						txtWordLength.requestFocus();
+					}
+				} catch(NumberFormatException nfEx){
+					txtWordLength.requestFocus();
+					setlblValidationSummaryText("Word length Value must be a number");
+				}
+				
+			}
+			
+		});
 		//
 		// lblWordCount
 		//
 		this.lblWordCount = new JLabel("Word Count: N/A");
 		this.lblWordCount.setBounds(150, 10, 110, 30);
+		//
+		// lblThemeCount
+		//
+		this.lblThemeCount = new JLabel("Theme Count: N/A");
+		this.lblThemeCount.setBounds(270, 10, 110, 30);
 		//
 		// lblThemes
 		//
@@ -116,8 +187,27 @@ public class WorkSheetCreatorGUI extends JFrame {
 		//
 		this.themes = new JComboBox<String>();
 		this.themes.setEnabled(false);
-		this.themes.setBounds(150, 80, 110, 30);
-		this.themes.addItem("All Words");
+		this.themes.setBounds(240, 40, 110, 30);
+		//this.themes.addItem("All Words");
+		this.themes.addItemListener(new java.awt.event.ItemListener(){
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(themes.isEnabled() && !themes.getSelectedItem().toString().equals("All Words")){
+					setlblThemeCount(collection.getThemeCount(themes.getSelectedItem().toString()));
+					setlblValidationSummaryText("Selected theme " + themes.getSelectedItem().toString());
+				} else {//(themes.getSelectedItem().toString().equals("All Words")){
+					int total = 0;
+					
+					for(Word word : collection.getWordList()){
+						total += word.getThemeCount();
+					}
+					setlblThemeCount(total);
+					setlblValidationSummaryText("Selected theme " + themes.getSelectedItem().toString());
+				}
+			}
+			
+		});
 		//
 		// lblValidationSummary
 		//
@@ -171,8 +261,45 @@ public class WorkSheetCreatorGUI extends JFrame {
 			}
 		});
 		//
+		// lblRemovedLetters
+		//
+		this.lblRemovedLetters = new JLabel("Removed letters");
+		this.lblRemovedLetters.setBounds(10, 100, 400, 70);
+		//
+		// removeLetters
+		//
+		this.removeLetters = new JCheckBox("Remove letters");
+		this.removeLetters.setBounds(10, 70, 120, 30);
+		this.removeLetters.setSelected(false);
+		this.removeLetters.setEnabled(false);
+		this.removeLetters.addItemListener(new java.awt.event.ItemListener(){
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(removeLetters.isSelected()){
+					collection.removeLetters(); // removes all the letters
+					displayRemovedLetters();
+				} else {
+					lblRemovedLetters.setText("");
+				}
+				
+			}
+			
+		});
+		//
+		// btnCreate
+		//
+		this.btnCreate = new JButton("Create");
+		this.btnCreate.addActionListener(new java.awt.event.ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				
+			}
+		});
+		//
 		// add components to the panels
 		//
+		this.pnlMenu.add(this.btnCreate);
 		this.pnlMenu.add(this.btnHelp);
 		this.pnlMenu.add(this.btnClose);
 		this.pnlMenu.add(this.lblValidationSummary);
@@ -180,17 +307,21 @@ public class WorkSheetCreatorGUI extends JFrame {
 		this.pnlChooser.add(this.txtFileName);
 		this.pnlChooser.add(this.btnOpenFile);
 		
+		this.pnlOptions.add(this.lblRemovedLetters);
 		this.pnlOptions.add(this.lblWordCount);
+		this.pnlOptions.add(this.lblThemeCount);
 		this.pnlOptions.add(this.lblThemes);
 		this.pnlOptions.add(this.themes);
 		this.pnlOptions.add(this.lblMinVal);
-		this.pnlOptions.add(this.txtMinVal);
-		this.pnlOptions.add(this.lblMaxVal);
-		this.pnlOptions.add(this.txtMaxVal);
+		this.pnlOptions.add(this.txtNumWords);
+		this.pnlOptions.add(this.lblWordLength);
+		this.pnlOptions.add(this.txtWordLength);
+		this.pnlOptions.add(this.removeLetters);
 		
-		this.add(this.pnlMenu);
+		
 		this.add(this.pnlChooser);
 		this.add(this.pnlOptions);
+		this.add(this.pnlMenu);
 		
 	}
 	/**
@@ -266,32 +397,65 @@ public class WorkSheetCreatorGUI extends JFrame {
 	{
 		this.collection.readFile(this.file);
 		this.fillThemeBox();
+		this.lblWordCount.setText("Word Count: " + this.collection.getSize());
+		this.txtNumWords.setText("10");
+		this.txtNumWords.setEnabled(true);
+		this.txtWordLength.setEnabled(true);
+		this.txtWordLength.setText("2");
+		this.removeLetters.setEnabled(true);
 	}
 	/**
 	 * Fills the JComboBox with all the <i>Key</i> Words
 	 */
 	private void fillThemeBox()
 	{
+		this.themes.addItem("All Words");
 		for(Word word: this.collection.getWordList()){
 			this.themes.addItem(word.getWord());
 		}
 		this.themes.setEnabled(true);
+		
+		int total = 0;
+		
+		for(Word word : collection.getWordList()){
+			total += word.getThemeCount();
+		}
+		setlblThemeCount(total);
 	}
 	/**
-	 * Defaults all fields
+	 * Defaults the form
 	 */
 	private void setDefault()
 	{
 		this.collection.getWordList();
-		this.themes.setEnabled(false);
 		this.txtFileName.setText("Select a file");
-		this.txtMaxVal.setText("");
-		this.txtMaxVal.setEnabled(false);
-		this.txtMinVal.setText("");
-		this.txtMinVal.setEnabled(false);
+		this.txtWordLength.setText("");
+		this.txtWordLength.setEnabled(false);
+		this.txtNumWords.setText("");
+		this.txtNumWords.setEnabled(false);
 		this.lblWordCount.setText("Word Count: N/A");
-		this.themes.removeAll();
-		this.themes.addItem("All Words");
+		this.collection.removeAllThemes();
+		this.themes.removeAllItems();
+		this.themes.setEnabled(false);
+		this.lblThemeCount.setText("Theme Count: N/A");
+		this.removeLetters.setEnabled(false);
+		this.lblRemovedLetters.setText("");
+	}
+	/**
+	 * Sets the text
+	 */
+	public void setlblThemeCount(int count)
+	{
+		this.lblThemeCount.setText("Theme Count: " + count);
+	}
+	/**
+	 * Displays the removed letters
+	 */
+	private void displayRemovedLetters()
+	{
+		for(String string : this.collection.getRemovedLetters()){
+			this.lblRemovedLetters.setText(this.lblRemovedLetters.getText() + string + ", ");
+		}
 	}
 	
 }
