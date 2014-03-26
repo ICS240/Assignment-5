@@ -3,8 +3,9 @@ import java.io.IOException;
 
 
 public class WordCollection {
-	private java.util.ArrayList<String> lettersRemoved;
 	
+	/// collection of letters which were removed
+	private java.util.ArrayList<String> lettersRemoved;
 	// collection of words which contain the words
 	private java.util.ArrayList<Word> wordList;
 	/**
@@ -25,11 +26,28 @@ public class WordCollection {
 	/**
 	 * Getter word method
 	 * @return
-	 * 	the wordlist object
+	 * 	the wordList object
 	 */
 	public java.util.ArrayList<Word> getWordList()
 	{
 		return this.wordList;
+	}
+	/**
+	 * Gets a word object. If no object is found, returns <i>null</i>
+	 * @param a_word
+	 * 	Key word to be used to find a word object
+	 * @return
+	 * 	A word object
+	 */
+	public Word getWord(String a_word)
+	{
+		for(int i = 0; i < wordList.size(); i++){
+			if(wordList.get(i).getWord().equals(a_word)){
+				return wordList.get(i);
+			}
+		}
+		
+		return null;
 	}
 	/**
 	 * Adds a word object to the ArrayList
@@ -114,27 +132,9 @@ public class WordCollection {
 	 * @return
 	 * 	<b>true</b> if the method was successful, else <b>false</b>
 	 */
-	public boolean removeAllThemes()
+	public void removeAllThemes()
 	{
-		return this.wordList.removeAll(this.wordList);
-	}
-	/**
-	 * Generates an ArrayList<Word>
-	 * @return
-	 * 	An ArrayList of Word Objects
-	 */
-	public java.util.ArrayList<Word> ToList()
-	{
-		return this.wordList;
-	}
-	/**
-	 * Generates a Word array
-	 * @return
-	 * 	A collection of Word Objects
-	 */
-	public Word[] ToArray()
-	{
-		return (Word[]) this.wordList.toArray();
+		this.wordList.clear();
 	}
 	/**
 	 * Gets the size of the array
@@ -245,133 +245,44 @@ public class WordCollection {
 		
 		return string.toString();
 	}
-	/**
-	 * Removes letters randomly from the themes
-	 */
-	public void removeLetters()
+	
+	public void toHtmlFile(String a_word, int wordLength, int numOfWords, boolean withRemovedLetters)
 	{
-		System.out.println("Removing letters");
+		Word word = getWord(a_word);
+		StringBuilder builder = new StringBuilder("<table border=\"3\" cellspacing=\"10\" cellpadding=\"10\"><thead><tr><th>Word</th><th>Theme</th><th>Image</th></thead><tbody>");
+		lettersRemoved.clear();
+		lettersRemoved.addAll(word.removeLetters(wordLength, numOfWords));
 		
-		java.util.Random rand = new java.util.Random();
-		for(Word word : this.wordList){
-			switch(rand.nextInt(6)) // produces a number between 0 and 5
-			{
-			case 0:
-				One_Blank_At_the_beginning_of_the_word(word);
-				break;
-			case 1:
-				One_Blank_At_the_end_of_the_word(word);
-				break;
-			case 2:
-				One_Blank_At_Random_Location(word);
-				break;
-			case 3:
-				Multiple_Blanks_at_all_Consonants(word);
-				break;
-			case 5:
-				Multiple_Blanks_at_all_Vowels(word);
-				break;
-			default:
-				One_Blank_At_the_beginning_of_the_word(word);
-				break;
+		builder.append(word.toHtmlDataRow());
+		//for(int i = 0; i < word.getThemeCount(); i++){
+		//	builder.append("<tr><td>" + word.getWord() + "</td><td>" + word.getThemeList().get(i) + "</td><td>" + word.getUrlList().get(i) + "</td></tr>");
+		//}
+		
+		if(withRemovedLetters){
+			builder.append("<tr><td colspan=\"3\">");
+			for(int i = 0; i < lettersRemoved.size(); i++){
+				builder.append(lettersRemoved.get(i) + ", ");
 			}
+			builder.append("</td></tr>");
 		}
+		builder.append("</tbody></table>");
+		
+		Html.toHtml(builder.toString());
 	}
-	/**
-	 * Removes the first letter of all the themes
-	 */
-	private void  One_Blank_At_the_beginning_of_the_word(Word a_word)
+	/*
+	public java.util.ArrayList<String> removeLetters(int wordLength, int numOfWords)
 	{
-		for(int i = 0; i < a_word.getThemeCount(); i++){
-			this.lettersRemoved.add(String.valueOf(a_word.getThemeList().get(i).charAt(0)));
-			a_word.getThemeList().set(i, a_word.getThemeList().get(i).substring(1));
-		}
-	}
-	/**
-	 *  Removes the last letter of the theme
-	 */
-	private void  One_Blank_At_the_end_of_the_word(Word a_word)
-	{
+		this.lettersRemoved.clear();
 		
-		for(String string : a_word.getThemeList()){
-			StringBuilder builder = new StringBuilder(string);
-			this.lettersRemoved.add(builder.substring(string.length() - 1));
-			builder.setCharAt(string.length() - 1, '_');
-			string = builder.toString();
-		}
-	}
-	/**
-	 * 
-	 */
-	private void  One_Blank_At_Random_Location(Word a_word)
-	{
-		java.util.Random rand = new java.util.Random();
+		java.util.ArrayList<String> letters = new java.util.ArrayList<String>();
 		
-		for(String string : a_word.getThemeList()){
-			StringBuilder builder = new StringBuilder(string);
-			
-			int val = rand.nextInt(string.length() - 1);
-			this.lettersRemoved.add(String.valueOf(builder.charAt(val)));
-			builder.setCharAt(val, '_');
-			string = builder.toString();
-		}
-	}
-	/**
-	 * 
-	 */
-	private void  Multiple_Blanks_at_all_Consonants(Word a_word)
-	{
-		
-		for(String string : a_word.getThemeList()){
-			
-			StringBuilder builder = new StringBuilder(string);
-			for(int i = 0; i < string.length(); i++){
-				if(!isVowel(string.charAt(i))){
-					this.lettersRemoved.add(String.valueOf(string.charAt(i)));
-					builder.setCharAt(i, '_');
-				}
-			}
-			string = builder.toString();
-		}
-	}
-	/**
-	 * 
-	 */
-	private void  Multiple_Blanks_at_all_Vowels(Word a_word)
-	{	
-		for(String string : a_word.getThemeList()){
-			
-			StringBuilder builder = new StringBuilder(string);
-			
-			for(int i = 0; i < string.length(); i++){
-				if(isVowel(string.charAt(i))){
-					this.lettersRemoved.add(String.valueOf(string.charAt(i)));
-					builder.setCharAt(i, '_');
-				}
-			}
-			string = builder.toString();
-		}
-	}
-	/**
-	 * Tells whether a letter is a character
-	 * @param letter
-	 * 	letter to tell if it is a vowel
-	 * @return
-	 * 	<b>true</b> if the letter is a vowel, else <b>false</b>
-	 */
-	private boolean isVowel(char letter)
-	{
-		boolean ret = false;
-		
-		char[] vowels = {'a', 'e', 'i', 'o', 'u' };
-		
-		for(int i = 0; i < vowels.length; i++){
-			if(vowels[i] == letter){
-				ret = true;
-				break;
-			}
+		for(int i = 0; i < this.wordList.size() && i < numOfWords; i++)
+		{
+			letters.addAll(this.wordList.get(i).removeLetters(wordLength, numOfWords));
 		}
 		
-		return ret;
+		return letters;
 	}
+	*/
+
 }

@@ -48,7 +48,7 @@ public class WorkSheetCreatorGUI extends JFrame {
 	// label for JCheckBox
 	private JLabel lblRemovedLetters;
 	// removes letters from the words
-	private JCheckBox removeLetters;
+	private JCheckBox checkRemoveLetters;
 	// create button
 	private JButton btnCreate;
 	
@@ -72,6 +72,7 @@ public class WorkSheetCreatorGUI extends JFrame {
 		//
 		this.setLayout(null);
 		this.setBounds(100, 100, 410, 580);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		//
 		// pnlMenu
 		//
@@ -196,6 +197,7 @@ public class WorkSheetCreatorGUI extends JFrame {
 				if(themes.isEnabled() && !themes.getSelectedItem().toString().equals("All Words")){
 					setlblThemeCount(collection.getThemeCount(themes.getSelectedItem().toString()));
 					setlblValidationSummaryText("Selected theme " + themes.getSelectedItem().toString());
+					checkRemoveLetters.setSelected(false);
 				} else {//(themes.getSelectedItem().toString().equals("All Words")){
 					int total = 0;
 					
@@ -257,7 +259,7 @@ public class WorkSheetCreatorGUI extends JFrame {
 		this.btnClose.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				closeWindow();
 			}
 		});
 		//
@@ -266,23 +268,21 @@ public class WorkSheetCreatorGUI extends JFrame {
 		this.lblRemovedLetters = new JLabel("Removed letters");
 		this.lblRemovedLetters.setBounds(10, 100, 400, 70);
 		//
-		// removeLetters
+		// checkRemoveLetters
 		//
-		this.removeLetters = new JCheckBox("Remove letters");
-		this.removeLetters.setBounds(10, 70, 120, 30);
-		this.removeLetters.setSelected(false);
-		this.removeLetters.setEnabled(false);
-		this.removeLetters.addItemListener(new java.awt.event.ItemListener(){
+		this.checkRemoveLetters = new JCheckBox("Remove letters");
+		this.checkRemoveLetters.setBounds(10, 70, 120, 30);
+		this.checkRemoveLetters.setSelected(false);
+		this.checkRemoveLetters.setEnabled(false);
+		this.checkRemoveLetters.addItemListener(new java.awt.event.ItemListener(){
 
 			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(removeLetters.isSelected()){
-					collection.removeLetters(); // removes all the letters
-					displayRemovedLetters();
+			public void itemStateChanged(ItemEvent arg0) {
+				if(checkRemoveLetters.isSelected()){
+					setlblValidationSummaryText("Letters will be removed when HTML file is created");
 				} else {
-					lblRemovedLetters.setText("");
+					setlblValidationSummaryText("Letters will NOT be removed when HTML file is created");
 				}
-				
 			}
 			
 		});
@@ -293,7 +293,7 @@ public class WorkSheetCreatorGUI extends JFrame {
 		this.btnCreate.addActionListener(new java.awt.event.ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
-				
+				create();
 			}
 		});
 		//
@@ -316,7 +316,7 @@ public class WorkSheetCreatorGUI extends JFrame {
 		this.pnlOptions.add(this.txtNumWords);
 		this.pnlOptions.add(this.lblWordLength);
 		this.pnlOptions.add(this.txtWordLength);
-		this.pnlOptions.add(this.removeLetters);
+		this.pnlOptions.add(this.checkRemoveLetters);
 		
 		
 		this.add(this.pnlChooser);
@@ -402,7 +402,7 @@ public class WorkSheetCreatorGUI extends JFrame {
 		this.txtNumWords.setEnabled(true);
 		this.txtWordLength.setEnabled(true);
 		this.txtWordLength.setText("2");
-		this.removeLetters.setEnabled(true);
+		this.checkRemoveLetters.setEnabled(true);
 	}
 	/**
 	 * Fills the JComboBox with all the <i>Key</i> Words
@@ -438,7 +438,7 @@ public class WorkSheetCreatorGUI extends JFrame {
 		this.themes.removeAllItems();
 		this.themes.setEnabled(false);
 		this.lblThemeCount.setText("Theme Count: N/A");
-		this.removeLetters.setEnabled(false);
+		this.checkRemoveLetters.setEnabled(false);
 		this.lblRemovedLetters.setText("");
 	}
 	/**
@@ -449,12 +449,31 @@ public class WorkSheetCreatorGUI extends JFrame {
 		this.lblThemeCount.setText("Theme Count: " + count);
 	}
 	/**
-	 * Displays the removed letters
+	 * Closes and disables the parent JFrame
 	 */
-	private void displayRemovedLetters()
+	private void closeWindow()
 	{
-		for(String string : this.collection.getRemovedLetters()){
-			this.lblRemovedLetters.setText(this.lblRemovedLetters.getText() + string + ", ");
+		this.setVisible(false);
+		this.dispose();
+	}
+	/**
+	 * creates the HTML form and opens it
+	 */
+	private void create()
+	{
+		
+		if(themes.getSelectedItem().toString() == "All Words") {
+			java.util.Random rand = new java.util.Random();
+			int value = rand.nextInt(themes.getItemCount() - 1); // randomly select a word
+			collection.toHtmlFile(themes.getItemAt(value), 
+									Integer.parseInt(txtWordLength.getText()), 
+									Integer.parseInt(txtNumWords.getText()), 
+									checkRemoveLetters.isSelected());
+		} else {
+			collection.toHtmlFile(themes.getSelectedItem().toString(), 
+									Integer.parseInt(txtWordLength.getText()), 
+									Integer.parseInt(txtNumWords.getText()), 
+									checkRemoveLetters.isSelected());
 		}
 	}
 	
